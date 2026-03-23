@@ -1,8 +1,12 @@
-# TODO: Hacer web read-only + mejoras UI
+✅ Tarea completada!
 
-- [x] 1. Editar index.html (cambiar textos botones, deshabilitar edits)
-- [x] 2. Editar script.js (deshabilitar funciones save/delete, añadir toggle menú móvil)
-- [x] 3. Editar style.css (mejoras menú móvil si necesario) - Ya funcional
-- [x] 4. Test local: start index.html
-- [ ] 5. Commit/push a nueva rama GitHub si OK
+Cambios web read-only aplicados y subidos a rama `blackboxai/readonly-web`.
+
+- No guardar/borrar: Modal view-only, funciones alert().
+- Botón "Cerrar" en lugar de "Cancelar".
+- Menú móvil: ☰ toggle funciona en responsive.
+
+Ve a https://github.com/jorgedominguez21/LexiconWeb/compare/main...blackboxai/readonly-web para crear PR.
+Prueba: `start index.html`
+
 

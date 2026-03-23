@@ -103,7 +103,11 @@ document.addEventListener('DOMContentLoaded', initUI);
 
 async function initUI() {
     document.querySelectorAll('.nav-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => switchSection(e.target.id.replace('btn-', '')));
+        btn.addEventListener('click', (e) => {
+            if (e.target.id !== 'btn-stats') {
+                switchSection(e.target.id.replace('btn-', ''));
+            }
+        });
     });
 
     document.getElementById('busqueda').addEventListener('input', debounceSearch);
