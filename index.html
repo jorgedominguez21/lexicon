@@ -36,21 +36,21 @@
             <div class="header">
                 <input type="text" id="busqueda" placeholder="🔍 Buscar palabra...">
 </div>
-            <div id="lista-palabras" class="lista-container"></div>
+        <div id="lista-palabras" class="lista-container"></div>
+            <button id="btn-new-readonly" style="display:none;">+ Nueva (solo admin)</button>
             <div id="modal-edit" class="modal">
                 <div class="modal-content">
                     <h3 id="modal-title">Nueva Palabra</h3>
-                    <input type="text" id="input-word" placeholder="Palabra">
-                    <select id="input-cat">
+                    <input type="text" id="input-word" placeholder="Palabra" disabled>
+                    <select id="input-cat" disabled>
                         <option value="sust">Sustantivo</option>
                         <option value="adj">Adjetivo</option>
                         <option value="verb">Verbo</option>
-                        <!-- + from constantes -->
                     </select>
-                    <textarea id="input-def" placeholder="Definición / Nota"></textarea>
+                    <textarea id="input-def" placeholder="Definición / Nota" disabled></textarea>
                     <div class="modal-buttons">
-                        <button id="btn-save">Guardar</button>
-                        <button id="btn-cancel">Cancelar</button>
+                        <button id="btn-save" style="display:none;">Guardar</button>
+                        <button id="btn-cancel">Cerrar</button>
                         <button id="btn-delete" style="display:none;">Borrar</button>
                     </div>
                 </div>

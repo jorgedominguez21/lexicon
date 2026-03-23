@@ -108,8 +108,8 @@ async function initUI() {
 
     document.getElementById('busqueda').addEventListener('input', debounceSearch);
     document.getElementById('btn-save').addEventListener('click', saveWord);
-    document.getElementById('btn-cancel').addEventListener('click', closeModal);
-    document.getElementById('btn-delete').addEventListener('click', deleteWord);
+document.getElementById('btn-cancel').addEventListener('click', closeModal);
+    // document.getElementById('btn-delete').addEventListener('click', deleteWord); // disabled
 
     switchSection('dashboard');
 }
@@ -133,7 +133,7 @@ async function updateLista() {
     palabras.forEach(p => {
         const card = document.createElement('div');
         card.className = 'palabra-card';
-        card.onclick = () => editWord(p);
+        card.onclick = () => viewWord(p);  // Changed to view only
         card.innerHTML = `
             <div class="palabra-titulo">${p.termino.toUpperCase()}</div>
             <span class="palabra-cat">${engine.getCategorias()[p.tipo] || p.tipo}</span>
@@ -161,13 +161,12 @@ async function updateStats() {
     }
 }
 
-function editWord(p) {
+function viewWord(p) {
     selectedId = p.id;
-    document.getElementById('modal-title').textContent = 'Editar: ' + p.termino;
+    document.getElementById('modal-title').textContent = 'Ver: ' + p.termino;
     document.getElementById('input-word').value = p.termino;
     document.getElementById('input-cat').value = p.tipo || 'sust';
     document.getElementById('input-def').value = p.definicion;
-    document.getElementById('btn-delete').style.display = 'inline-block';
     document.getElementById('modal-edit').classList.add('active');
 }
 
@@ -181,36 +180,14 @@ function closeModal() {
     document.getElementById('modal-title').textContent = 'Nueva Palabra';
 }
 
+// saveWord disabled for web readonly
 async function saveWord() {
-    const termino = document.getElementById('input-word').value.trim();
-    const tipo = document.getElementById('input-cat').value;
-    const definicion = document.getElementById('input-def').value.trim();
-
-    if (!termino) return alert('Palabra requerida');
-
-    const result = selectedId 
-        ? await engine.actualizar(selectedId, termino, definicion, tipo)
-        : await engine.insertar(termino, definicion, tipo);
-
-    if (result === 'OK') {
-        updateLista();
-        closeModal();
-        alert('Guardado en Supabase!');
-    } else {
-        alert(result);
-    }
+    alert('Modificaciones deshabilitadas en web. Usa app nativa.');
 }
 
+// deleteWord disabled for web readonly
 async function deleteWord() {
-    if (confirm('¿Borrar de Supabase?')) {
-        const result = await engine.eliminar(selectedId);
-        if (result === 'OK') {
-            updateLista();
-            closeModal();
-        } else {
-            alert(result);
-        }
-    }
+    alert('Borrar deshabilitado en web. Usa app nativa.');
 }
 
 // --- JUEGO AHORCADO ---
@@ -253,6 +230,17 @@ function switchSection(section) {
     
     if (section === 'juego') initJuego();
 }
+
+// Mobile menu toggle
+document.addEventListener('DOMContentLoaded', function() {
+    const menuToggle = document.getElementById('menu-toggle');
+    const sidebar = document.getElementById('sidebar');
+    if (menuToggle && sidebar) {
+        menuToggle.addEventListener('click', function() {
+            sidebar.classList.toggle('active');
+        });
+    }
+});
 
 // Categorías del selector modal
 const catSelect = document.getElementById('input-cat');
