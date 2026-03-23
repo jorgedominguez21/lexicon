@@ -235,23 +235,31 @@ function switchSection(section) {
     if (section === 'juego') initJuego();
 }
 
-// Mobile menu toggle with overlay close
+// Mobile menu toggle - auto close on nav select + ☰ toggle
 document.addEventListener('DOMContentLoaded', function() {
     const menuToggle = document.getElementById('menu-toggle');
     const sidebar = document.getElementById('sidebar');
+    const navBtns = document.querySelectorAll('.nav-btn');
     const mainContent = document.getElementById('main-content');
+    
+    function closeSidebar() {
+        sidebar.classList.remove('active');
+    }
     
     if (menuToggle && sidebar && mainContent) {
         menuToggle.addEventListener('click', function() {
             sidebar.classList.toggle('active');
         });
         
-        // Close sidebar clicking outside
-        mainContent.addEventListener('click', function() {
-            sidebar.classList.remove('active');
+        // Auto close on nav button click
+        navBtns.forEach(btn => {
+            btn.addEventListener('click', closeSidebar);
         });
         
-        // Prevent close when click inside sidebar
+        // Close clicking main content
+        mainContent.addEventListener('click', closeSidebar);
+        
+        // Prevent close inside sidebar
         sidebar.addEventListener('click', function(e) {
             e.stopPropagation();
         });

@@ -419,14 +419,14 @@ main {
     display: none; /* Se oculta en PC */
     position: fixed;
     top: 20px;
-    left: 20px;
-    z-index: 1100;
+    right: 20px; /* Derecha en lugar izquierda */
+    z-index: 1101;
     width: 50px;
     height: 50px;
     background: #1f538d;
     color: white;
     border: none;
-    border-radius: 50%; /* Lo hace redondo */
+    border-radius: 50%;
     font-size: 1.5em;
     cursor: pointer;
     box-shadow: 0 4px 8px rgba(0,0,0,0.2);
