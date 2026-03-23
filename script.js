@@ -235,13 +235,25 @@ function switchSection(section) {
     if (section === 'juego') initJuego();
 }
 
-// Mobile menu toggle
+// Mobile menu toggle with overlay close
 document.addEventListener('DOMContentLoaded', function() {
     const menuToggle = document.getElementById('menu-toggle');
     const sidebar = document.getElementById('sidebar');
-    if (menuToggle && sidebar) {
+    const mainContent = document.getElementById('main-content');
+    
+    if (menuToggle && sidebar && mainContent) {
         menuToggle.addEventListener('click', function() {
             sidebar.classList.toggle('active');
+        });
+        
+        // Close sidebar clicking outside
+        mainContent.addEventListener('click', function() {
+            sidebar.classList.remove('active');
+        });
+        
+        // Prevent close when click inside sidebar
+        sidebar.addEventListener('click', function(e) {
+            e.stopPropagation();
         });
     }
 });

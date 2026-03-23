@@ -23,9 +23,13 @@ body {
     background: #1f538d;
     color: white;
     padding: 20px 0;
-    box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+    box-shadow: 4px 0 20px rgba(0,0,0,0.3);
     z-index: 1000;
     transition: transform 0.3s ease;
+}
+
+.sidebar.active {
+    transform: translateX(0) !important;
 }
 
 .logo h2 {
