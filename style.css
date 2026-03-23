@@ -171,3 +171,52 @@ main {
     .menu-toggle { display: block; }
     .welcome h1 { font-size: 1.8em; }
 }
+/* --- MEJORAS DEL MODAL --- */
+.modal-content {
+    max-width: 600px; /* Más ancho para lectura cómoda */
+    width: 90%;
+    padding: 30px;
+}
+
+#input-def {
+    height: 250px; /* Caja mucho más alta para evitar el scroll excesivo */
+    resize: vertical; /* Permite al usuario estirarla si quiere */
+    line-height: 1.6;
+    font-size: 16px;
+    padding: 12px;
+    border: 1px solid #ccc;
+    background-color: #fdfdfd;
+}
+
+/* --- ESTILO ENLACES RAE/WIKI --- */
+.card-links {
+    margin-top: 15px;
+    display: flex;
+    gap: 10px;
+    border-top: 1px solid #eee;
+    padding-top: 10px;
+}
+
+.card-links a {
+    background: #f0f4f8;
+    color: #1f538d;
+    padding: 5px 12px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 0.8em;
+    font-weight: bold;
+    transition: background 0.2s;
+}
+
+.card-links a:hover {
+    background: #1f538d;
+    color: white;
+}
+
+/* --- AJUSTE CATEGORÍA --- */
+.palabra-cat {
+    display: inline-block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    text-transform: capitalize;
+}

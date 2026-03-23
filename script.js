@@ -1,4 +1,4 @@
-// script.js - Lexicon Studio Web Corregido
+// script.js - Lexicon Studio Web Corregido (V2 - Con RAE/Wiki y Mejoras de Modal)
 class PalabrasEngine {
     constructor() {
         this.supabase = supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
@@ -25,7 +25,13 @@ class PalabrasEngine {
     }
 
     getCategorias() {
-        return { 'sust': 'Sustantivo', 'adj': 'Adjetivo', 'verb': 'Verbo', 'adv': 'Adverbio' };
+        return { 
+            'sust': 'Sustantivo', 
+            'adj': 'Adjetivo', 
+            'verb': 'Verbo', 
+            'adv': 'Adverbio',
+            'expr': 'Expresión'
+        };
     }
 }
 
@@ -50,12 +56,18 @@ function initUI() {
         menuToggle.addEventListener('click', () => sidebar.classList.toggle('active'));
     }
 
-    document.getElementById('busqueda').addEventListener('input', () => {
-        clearTimeout(this.searchTimer);
-        this.searchTimer = setTimeout(updateLista, 300);
-    });
+    // Buscador con retraso para rendimiento
+    const inputBusqueda = document.getElementById('busqueda');
+    if (inputBusqueda) {
+        inputBusqueda.addEventListener('input', () => {
+            clearTimeout(this.searchTimer);
+            this.searchTimer = setTimeout(updateLista, 300);
+        });
+    }
 
-    document.getElementById('btn-cancel').onclick = () => document.getElementById('modal-edit').classList.remove('active');
+    document.getElementById('btn-cancel').onclick = () => {
+        document.getElementById('modal-edit').classList.remove('active');
+    };
 
     switchSection('dashboard');
 }
@@ -64,9 +76,13 @@ function switchSection(id) {
     document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
     document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
     
-    document.getElementById(id).classList.add('active');
-    document.getElementById('btn-' + id).classList.add('active');
-    document.getElementById('sidebar').classList.remove('active'); // Cerrar en móvil al navegar
+    const targetSection = document.getElementById(id);
+    const targetBtn = document.getElementById('btn-' + id);
+    
+    if (targetSection) targetSection.classList.add('active');
+    if (targetBtn) targetBtn.classList.add('active');
+    
+    document.getElementById('sidebar').classList.remove('active'); 
 
     if (id === 'juego') initJuego();
 }
@@ -78,18 +94,35 @@ async function updateStats() {
 
 async function updateLista() {
     const lista = document.getElementById('lista-palabras');
-    const palabras = await engine.listarRapido(document.getElementById('busqueda').value);
+    const busqueda = document.getElementById('busqueda').value;
+    const palabras = await engine.listarRapido(busqueda);
+    const catsMap = engine.getCategorias();
     
     lista.innerHTML = '';
     palabras.forEach(p => {
         const card = document.createElement('div');
         card.className = 'palabra-card';
+        
+        // Mapeo de categoría para mostrar nombre completo
+        const categoriaNombre = catsMap[p.tipo] || p.tipo;
+
+        // Abrir modal al hacer clic en la tarjeta
         card.onclick = () => {
+            document.getElementById('modal-title').textContent = p.termino.toUpperCase();
             document.getElementById('input-word').value = p.termino;
+            document.getElementById('input-cat').value = p.tipo;
             document.getElementById('input-def').value = p.definicion;
             document.getElementById('modal-edit').classList.add('active');
         };
-        card.innerHTML = `<div class="palabra-titulo">${p.termino.toUpperCase()}</div><span class="palabra-cat">${p.tipo}</span>`;
+
+        card.innerHTML = `
+            <div class="palabra-titulo">${p.termino.toUpperCase()}</div>
+            <span class="palabra-cat">${categoriaNombre}</span>
+            <div class="card-links">
+                <a href="https://dle.rae.es/${p.termino}" target="_blank" onclick="event.stopPropagation();">RAE</a>
+                <a href="https://es.wiktionary.org/wiki/${p.termino}" target="_blank" onclick="event.stopPropagation();">WIKI</a>
+            </div>
+        `;
         lista.appendChild(card);
     });
 }
@@ -101,7 +134,7 @@ async function initJuego() {
     if (engine.words.length === 0) return;
     const item = engine.words[Math.floor(Math.random() * engine.words.length)];
     gameState = {
-        palabra: item.termino.toUpperCase(),
+        palabra: item.termino.toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g, ""),
         pista: item.definicion,
         fallos: 0,
         adivinadas: []

@@ -21,28 +21,52 @@
     </nav>
 
     <main id="main-content">
+        
         <section id="dashboard" class="section active">
             <div class="welcome">
                 <h1>¡Bienvenido a Lexicon Studio Web!</h1>
                 <p id="stats-total">Total palabras: Cargando...</p>
-                <p>App responsive para móvil/PC. Gestiona tu diccionario y juega al Ahorcado.</p>
+                <div class="info-card">
+                    <p>App responsive para móvil y PC. Gestiona tu diccionario personal y diviértete con el juego del ahorcado.</p>
+                </div>
             </div>
         </section>
 
         <section id="gestion" class="section">
             <div class="header">
-                <input type="text" id="busqueda" placeholder="🔍 Buscar palabra...">
+                <input type="text" id="busqueda" placeholder="🔍 Buscar palabra en tu diccionario...">
             </div>
-            <div id="lista-palabras" class="lista-container"></div>
+            
+            <div id="lista-palabras" class="lista-container">
+                </div>
             
             <div id="modal-edit" class="modal">
                 <div class="modal-content">
                     <h3 id="modal-title">Detalle de Palabra</h3>
-                    <input type="text" id="input-word" placeholder="Palabra" disabled>
-                    <select id="input-cat" disabled></select>
-                    <textarea id="input-def" placeholder="Definición / Nota" disabled></textarea>
+                    
+                    <div class="input-group">
+                        <label>Palabra:</label>
+                        <input type="text" id="input-word" disabled>
+                    </div>
+
+                    <div class="input-group">
+                        <label>Categoría Gramatical:</label>
+                        <select id="input-cat" disabled>
+                            <option value="sust">Sustantivo</option>
+                            <option value="adj">Adjetivo</option>
+                            <option value="verb">Verbo</option>
+                            <option value="adv">Adverbio</option>
+                            <option value="expr">Expresión</option>
+                        </select>
+                    </div>
+
+                    <div class="input-group">
+                        <label>Definición y Notas:</label>
+                        <textarea id="input-def" disabled></textarea>
+                    </div>
+
                     <div class="modal-buttons">
-                        <button id="btn-save" style="display:none;">Guardar</button>
+                        <button id="btn-save" style="display:none;">Guardar Cambios</button>
                         <button id="btn-cancel">Cerrar</button>
                     </div>
                 </div>
@@ -52,17 +76,22 @@
         <section id="juego" class="section">
             <div class="game-header">
                 <h2 id="game-title">¡Juega al Ahorcado!</h2>
-                <p id="game-hint">Pista: Cargando...</p>
+                <div class="hint-box">
+                    <p id="game-hint">Pista: Cargando...</p>
+                </div>
             </div>
-            <canvas id="canvas-ahorcado" width="300" height="300"></canvas>
-            <div id="palabra-mostrada"></div>
-            <div id="intentos-restantes">Intentos: 6</div>
-            <div id="teclado" class="teclado"></div>
+
+            <div class="game-container">
+                <canvas id="canvas-ahorcado" width="300" height="300"></canvas>
+                <div id="palabra-mostrada" class="word-display"></div>
+                <div id="intentos-restantes" class="tries-left">Intentos: 6</div>
+                <div id="teclado" class="teclado"></div>
+            </div>
             
             <div id="game-overlay" class="game-overlay">
                 <h2 id="overlay-msg">¡MENSAJE!</h2>
                 <p id="palabra-final"></p>
-                <button onclick="initJuego()">Nueva Partida</button>
+                <button class="btn-primary" onclick="initJuego()">Nueva Partida</button>
             </div>
         </section>
     </main>
