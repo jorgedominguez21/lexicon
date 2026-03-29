@@ -30,7 +30,7 @@ class PalabrasEngine {
         const terminoSinAcentos = normalizar(w.termino);
         return terminoSinAcentos.includes(query);
     }).slice(0, 50);
-}
+    }
 
     getCategorias() {
         return { 
@@ -77,7 +77,8 @@ function initUI() {
         document.getElementById('modal-edit').classList.remove('active');
     };
 
-    switchSection('dashboard');
+    const ultimaSeccion = localStorage.getItem('seccionActiva') || 'dashboard';
+    switchSection(ultimaSeccion);
 }
 
 function switchSection(id) {
@@ -91,6 +92,9 @@ function switchSection(id) {
     if (targetBtn) targetBtn.classList.add('active');
     
     document.getElementById('sidebar').classList.remove('active'); 
+
+    // --- NUEVA LÍNEA: Guardamos la sección actual ---
+    localStorage.setItem('seccionActiva', id);
 
     if (id === 'juego') initJuego();
 }
