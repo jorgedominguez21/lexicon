@@ -17,6 +17,7 @@
             <li><button id="btn-dashboard" class="nav-btn active">Inicio</button></li>
             <li><button id="btn-gestion" class="nav-btn">Gestión de Palabras</button></li>
             <li><button id="btn-juego" class="nav-btn">🎮 Jugar Ahorcado</button></li>
+            <li><button id="btn-estudio" class="nav-btn">🚀 Modo Estudio</button></li>
         </ul>
     </nav>
 
@@ -99,6 +100,29 @@
                 <button class="btn-primary" onclick="initJuego()">Nueva Partida</button>
             </div>
         </section>
+        
+        <section id="estudio" class="section">
+            <div class="welcome">
+                <h1>Modo Estudio</h1>
+                <p class="subtitle">Escribe la palabra exacta para subir de nivel.</p>
+            </div>
+
+            <div class="palabra-card estudio-card" style="max-width: 500px; margin: 20px auto; text-align: center;">
+                <div id="pista-definicion" style="font-style: italic; margin-bottom: 20px; font-size: 1.1em; color: #555;">
+                    Cargando definición...
+                </div>
+        
+                <input type="text" id="input-respuesta" placeholder="Escribe aquí..." 
+                    style="width: 100%; padding: 12px; border-radius: 8px; border: 2px solid #ddd; font-size: 1.1em; text-align: center; margin-bottom: 15px;">
+        
+                <div id="feedback-estudio" style="margin-bottom: 15px; font-weight: bold; min-height: 24px;"></div>
+
+                <button id="btn-comprobar" class="link-lexicon" style="width: 100%; justify-content: center; padding: 12px;">
+                    Comprobar ➔
+                </button>
+            </div>
+        </section>
+    
     </main>
 
     <script src="config-public.js"></script>

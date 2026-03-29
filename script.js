@@ -1,4 +1,4 @@
-// script.js - Lexicon Studio Web V2.5 (Sincronización y UI mejorada)
+// script.js - Lexicon Studio Web V3.0 (Edición Estudio & Sincronización)
 class PalabrasEngine {
     constructor() {
         this.supabase = supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
@@ -20,16 +20,15 @@ class PalabrasEngine {
     }
 
     async listarRapido(filtro = '') {
-    // Función interna para limpiar acentos: "Ábaco" -> "abaco"
-    const normalizar = (texto) => 
-        texto.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+        const normalizar = (texto) => 
+            texto.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
 
-    const query = normalizar(filtro);
-    
-    return this.words.filter(w => {
-        const terminoSinAcentos = normalizar(w.termino);
-        return terminoSinAcentos.includes(query);
-    }).slice(0, 50);
+        const query = normalizar(filtro);
+        
+        return this.words.filter(w => {
+            const terminoSinAcentos = normalizar(w.termino);
+            return terminoSinAcentos.includes(query);
+        }).slice(0, 50);
     }
 
     getCategorias() {
@@ -44,12 +43,13 @@ class PalabrasEngine {
 }
 
 const engine = new PalabrasEngine();
+let palabraActualEstudio = null;
 
 // --- UI CONTROL ---
 document.addEventListener('DOMContentLoaded', initUI);
 
 function initUI() {
-    // Navegación
+    // Navegación General
     document.querySelectorAll('.nav-btn').forEach(btn => {
         btn.addEventListener('click', (e) => {
             const section = e.target.id.replace('btn-', '');
@@ -73,12 +73,41 @@ function initUI() {
         });
     }
 
-    document.getElementById('btn-cancel').onclick = () => {
-        document.getElementById('modal-edit').classList.remove('active');
-    };
+    // Cerrar Modal
+    const btnCancel = document.getElementById('btn-cancel');
+    if (btnCancel) {
+        btnCancel.onclick = () => {
+            document.getElementById('modal-edit').classList.remove('active');
+        };
+    }
 
+    // --- EVENTOS MODO ESTUDIO ---
+    const btnEstudioMenu = document.getElementById('btn-estudio');
+    if (btnEstudioMenu) {
+        btnEstudioMenu.onclick = () => {
+            switchSection('estudio');
+            cargarNuevaPalabraEstudio();
+        };
+    }
+
+    const btnComprobar = document.getElementById('btn-comprobar');
+    if (btnComprobar) {
+        btnComprobar.onclick = comprobarRespuesta;
+    }
+
+    const inputRespuesta = document.getElementById('input-respuesta');
+    if (inputRespuesta) {
+        inputRespuesta.addEventListener('keyup', (e) => {
+            if (e.key === 'Enter') comprobarRespuesta();
+        });
+    }
+
+    // Cargar última sección visitada o Dashboard por defecto
     const ultimaSeccion = localStorage.getItem('seccionActiva') || 'dashboard';
     switchSection(ultimaSeccion);
+    
+    // Si la última sección era estudio, cargar palabra automáticamente
+    if (ultimaSeccion === 'estudio') cargarNuevaPalabraEstudio();
 }
 
 function switchSection(id) {
@@ -91,12 +120,13 @@ function switchSection(id) {
     if (targetSection) targetSection.classList.add('active');
     if (targetBtn) targetBtn.classList.add('active');
     
-    document.getElementById('sidebar').classList.remove('active'); 
+    const sidebar = document.getElementById('sidebar');
+    if (sidebar) sidebar.classList.remove('active'); 
 
-    // --- NUEVA LÍNEA: Guardamos la sección actual ---
     localStorage.setItem('seccionActiva', id);
 
     if (id === 'juego') initJuego();
+    if (id === 'estudio') cargarNuevaPalabraEstudio();
 }
 
 async function updateStats() {
@@ -106,7 +136,10 @@ async function updateStats() {
 
 async function updateLista() {
     const lista = document.getElementById('lista-palabras');
-    const busqueda = document.getElementById('busqueda').value;
+    if (!lista) return;
+    
+    const busquedaInput = document.getElementById('busqueda');
+    const busqueda = busquedaInput ? busquedaInput.value : '';
     const palabras = await engine.listarRapido(busqueda);
     const catsMap = engine.getCategorias();
     
@@ -117,7 +150,6 @@ async function updateLista() {
         
         const categoriaNombre = catsMap[p.tipo] || p.tipo;
 
-        // Clic en la tarjeta abre tu definición propia (Modal)
         card.onclick = () => {
             document.getElementById('modal-title').textContent = p.termino.toUpperCase();
             document.getElementById('input-word').value = p.termino;
@@ -137,6 +169,64 @@ async function updateLista() {
         `;
         lista.appendChild(card);
     });
+}
+
+// --- MODO ESTUDIO (ALGORITMO DE NIVELES) ---
+async function cargarNuevaPalabraEstudio() {
+    const feedback = document.getElementById('feedback-estudio');
+    const input = document.getElementById('input-respuesta');
+    if (feedback) feedback.textContent = '';
+    if (input) {
+        input.value = '';
+        input.style.borderColor = '#ddd';
+        input.focus();
+    }
+
+    // Traemos 10 candidatas con nivel más bajo
+    const { data, error } = await engine.supabase
+        .from('palabras')
+        .select('*')
+        .order('nivel', { ascending: true })
+        .limit(10);
+
+    if (data && data.length > 0) {
+        // Elegimos una al azar de esas 10
+        palabraActualEstudio = data[Math.floor(Math.random() * data.length)];
+        document.getElementById('pista-definicion').textContent = `"${palabraActualEstudio.definicion}"`;
+    } else {
+        document.getElementById('pista-definicion').textContent = "No hay palabras para estudiar.";
+    }
+}
+
+async function comprobarRespuesta() {
+    const input = document.getElementById('input-respuesta');
+    const feedback = document.getElementById('feedback-estudio');
+    const respuesta = input.value.trim();
+
+    if (!palabraActualEstudio) return;
+
+    // Comparación estricta (puedes añadir .toLowerCase() si prefieres flexibilidad)
+    if (respuesta === palabraActualEstudio.termino) {
+        feedback.innerHTML = '<span style="color: #27ae60;">✅ ¡Perfecto! Nivel subido.</span>';
+        input.style.borderColor = '#27ae60';
+        
+        await engine.supabase
+            .from('palabras')
+            .update({ nivel: (palabraActualEstudio.nivel || 0) + 1 })
+            .eq('id', palabraActualEstudio.id);
+
+        setTimeout(cargarNuevaPalabraEstudio, 1200);
+    } else {
+        feedback.innerHTML = `<span style="color: #e74c3c;">❌ Error. Era: ${palabraActualEstudio.termino}</span>`;
+        input.style.borderColor = '#e74c3c';
+        
+        await engine.supabase
+            .from('palabras')
+            .update({ nivel: 0 })
+            .eq('id', palabraActualEstudio.id);
+            
+        setTimeout(cargarNuevaPalabraEstudio, 2500);
+    }
 }
 
 // --- JUEGO AHORCADO ---
@@ -160,6 +250,7 @@ async function initJuego() {
 
 function renderJuego() {
     const display = document.getElementById('palabra-mostrada');
+    if (!display) return;
     display.textContent = gameState.palabra.split('').map(l => gameState.adivinadas.includes(l) ? l : '_').join(' ');
     
     const teclado = document.getElementById('teclado');
@@ -196,6 +287,7 @@ function finalizarJuego(gana) {
 
 function dibujarAhorcado(paso) {
     const canvas = document.getElementById('canvas-ahorcado');
+    if (!canvas) return;
     const ctx = canvas.getContext('2d');
     ctx.lineWidth = 4;
     ctx.strokeStyle = '#1f538d';
